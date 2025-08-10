@@ -10,7 +10,7 @@ const getSecretRoomId = (myUserId, targetId) => {
 const initializeSocket = (server) => {
   const io = socketIO(server, {
     cors: {
-      origin: "https://https-github-com-abhishek2002singh.onrender.com"
+      origin: "https://whatsapp-clone-sj08.onrender.com"
     }
   });
 

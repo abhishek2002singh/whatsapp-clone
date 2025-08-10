@@ -13,7 +13,7 @@ app.use(cookieParser());
 app.use(express.json());
 
 app.use(cors({
-  origin: "https://https-github-com-abhishek2002singh.onrender.com",
+  origin: "https://whatsapp-clone-sj08.onrender.com",
   credentials: true,
 }));
 
