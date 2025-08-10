@@ -1,15 +1,53 @@
-import React, { useState } from 'react';
-import { Search, Plus, MoreVertical, Settings, Users, MessageCircle } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { Search, Plus, MoreVertical, Settings, Users as UsersIcon, MessageCircle } from 'lucide-react';
+import { BASE_URL } from '../utils/Constant';
+import axios from 'axios';
+import { useSelector } from 'react-redux';
 
 const WhatsAppSidebar = ({ contacts, selectedContact, onContactSelect }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [activeFilter, setActiveFilter] = useState('All');
+  const [onlineUsers, setOnlineUsers] = useState([]);
+  const user = useSelector(store => store.user);
+   const myUserId = user?.userData?._id || user?._id;
 
-  console.log("hii",contacts)
-  console.log("hii",selectedContact)
+  console.log("my" ,contacts)
+
+
+  // Fetch online users
+  useEffect(() => {
+    const fetchOnlineUsers = async () => {
+      try {
+        const response = await axios.get(`${BASE_URL}/allOnlineUser`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`
+          }
+        });
+
+        if (response?.data?.data) {
+          setOnlineUsers(response.data.data);
+        }
+      } catch (err) {
+        console.error("Failed to fetch online users:", err);
+      }
+    };
+
+    fetchOnlineUsers();
+    const interval = setInterval(fetchOnlineUsers, 30000); // Refresh every 30 seconds
+
+    return () => clearInterval(interval);
+  }, []);
+
+ 
+  const getEnhancedContacts = () => {
+    return contacts?.map(contact => {
+      const isOnline = onlineUsers.some(user => user._id === contact.id);
+      return { ...contact, isOnline };
+    });
+  };
 
   // Filter contacts based on search term and active filter
-  const filteredContacts = contacts?.filter(contact => {
+  const filteredContacts = getEnhancedContacts()?.filter(contact => {
     const matchesSearch = contact.name.toLowerCase().includes(searchTerm.toLowerCase());
     
     switch (activeFilter) {
@@ -25,9 +63,10 @@ const WhatsAppSidebar = ({ contacts, selectedContact, onContactSelect }) => {
   });
 
   const handleContactClick = (contact) => {
-    // console.log('Selected contact:', contact.name, 'with ID:', contact.id);
     onContactSelect(contact);
   };
+
+
 
   const filterButtons = ['All', 'Unread', 'Favourites', 'Groups'];
 
@@ -43,18 +82,27 @@ const WhatsAppSidebar = ({ contacts, selectedContact, onContactSelect }) => {
             {contacts?.reduce((sum, contact) => sum + contact.unread, 0)}
           </span>
         </div>
+        
+        <button 
+          onClick={() => setShowOnlineUsers(true)}
+          className="w-10 h-10 bg-gray-600 rounded-full flex items-center justify-center hover:bg-gray-500 cursor-pointer"
+        >
+          <UsersIcon className="w-5 h-5 text-white" />
+        </button>
+        
         <div className="w-10 h-10 bg-gray-600 rounded-full flex items-center justify-center hover:bg-gray-500 cursor-pointer">
           <Settings className="w-5 h-5 text-white" />
         </div>
-        <div className="w-10 h-10 bg-gray-600 rounded-full flex items-center justify-center hover:bg-gray-500 cursor-pointer">
-          <Users className="w-5 h-5 text-white" />
-        </div>
+        
         <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center hover:bg-blue-600 cursor-pointer">
           <div className="w-6 h-6 bg-white rounded-full"></div>
         </div>
+        
         <div className="mt-auto">
           <div className="w-10 h-10 bg-gray-600 rounded-full flex items-center justify-center hover:bg-gray-500 cursor-pointer">
-            <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=40&h=40&fit=crop&crop=face" alt="Profile" className="w-8 h-8 rounded-full" />
+            <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=40&h=40&fit=crop&crop=face" 
+                 alt="Profile" 
+                 className="w-8 h-8 rounded-full" />
           </div>
         </div>
       </div>
@@ -121,10 +169,10 @@ const WhatsAppSidebar = ({ contacts, selectedContact, onContactSelect }) => {
                 onClick={() => handleContactClick(contact)}
               >
                 <div className="flex items-center space-x-3">
-                  {/* Avatar */}
+                  {/* Avatar with online indicator */}
                   <div className="relative flex-shrink-0">
-                    {contact.avatar ? (
-                      <img src={contact.avatar} alt="" className="w-12 h-12 rounded-full object-cover" />
+                    {contact.imageUrl ? (
+                      <img src={contact.imageUrl} alt="" className="w-12 h-12 rounded-full object-cover" />
                     ) : (
                       <div className="w-12 h-12 bg-gray-300 rounded-full flex items-center justify-center">
                         <span className="text-gray-600 text-lg font-medium">
@@ -142,13 +190,10 @@ const WhatsAppSidebar = ({ contacts, selectedContact, onContactSelect }) => {
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-1 flex-1 min-w-0">
                         <h3 className="font-medium text-gray-900 truncate text-sm">
-                          {contact.name}
+                         {contact.id === myUserId ? "You" : contact.name}
+                          
                         </h3>
-                        {contact.isVerified && (
-                          <svg className="w-4 h-4 text-blue-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                          </svg>
-                        )}
+                       
                       </div>
                       <div className="flex items-center space-x-2 flex-shrink-0">
                         <span className={`text-xs ${
@@ -184,6 +229,8 @@ const WhatsAppSidebar = ({ contacts, selectedContact, onContactSelect }) => {
           )}
         </div>
       </div>
+
+      
     </>
   );
 };

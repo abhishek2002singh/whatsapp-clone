@@ -11,11 +11,12 @@ routerPath.post('/login', login);
 routerPath.post('/logout', logout);
 
 
-const { allUser, userStatus , updateOnlineStatus} = require("../controller/allUser");
+const { allUser, userStatus , updateOnlineStatus ,allOnlineUser} = require("../controller/allUser");
 
 routerPath.get("/users", allUser); 
 routerPath.get("/status", userStatus);
 routerPath.post("/updateOnlineStatus", updateOnlineStatus);
+routerPath.get("/allOnlineUser", allOnlineUser);
 
 
 //chating route

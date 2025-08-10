@@ -132,3 +132,23 @@ exports.updateOnlineStatus = async (req, res) => {
     });
   }
 };
+
+exports.allOnlineUser = async (req, res) => {
+  try {
+    const allOnline = await User.find({ isOnline: true });
+
+    if (!allOnline || allOnline.length === 0) {
+      return res.status(404).json({ message: "No online users found" });
+    }
+
+    return res.status(200).json({
+      message: "Online users fetched successfully",
+      data: allOnline
+    });
+
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: "Server error", error: err.message });
+  }
+};
+

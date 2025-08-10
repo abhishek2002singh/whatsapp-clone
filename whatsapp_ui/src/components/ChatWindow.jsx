@@ -51,7 +51,7 @@ const ChatWindow = ({ contact, onBack }) => {
       });
 
       if (response.data.success) {
-        // Transform messages to include sender's firstName and isOwn flag
+       
         const transformedMessages = response.data.messages.map(msg => ({
           ...msg,
           senderName: msg.senderId.firstName,
@@ -71,7 +71,7 @@ const ChatWindow = ({ contact, onBack }) => {
       headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
     });
 
-    console.log("lalalalallaal" , response)
+  
     if (response.data.success) {
       setIsOnline(response?.data?.user?.isOnline);
       setLastSeen(response?.data?.user?.lastSeen);
@@ -234,36 +234,42 @@ useEffect(() => {
       </div>
 
       {/* Messages Area */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-2 bg-[#efeae2]">
-        {messages.map((msg, index) => (
-          <div
-            key={msg._id || index}
-            className={`flex ${msg.isOwn ? "justify-end" : "justify-start"}`}
-          >
-            <div
-              className={`max-w-[70%] rounded-lg px-3 py-2 mb-1 ${
-                msg.isOwn
-                  ? "bg-[#d9fdd3] text-gray-900"
-                  : "bg-white text-gray-900"
-              } shadow-sm`}
-            >
-              {!msg.isOwn && (
-                <p className="text-xs font-semibold text-gray-700 mb-1">
-                  {msg.senderName}
-                </p>
-              )}
-              <p className="text-sm">{msg.text}</p>
-              <div className={`flex items-center justify-end mt-1 space-x-1`}>
-                <span className="text-xs text-gray-500">
-                  {new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                </span>
-                {msg.isOwn && renderMessageStatus(msg.status)}
-              </div>
-            </div>
+      {/* Messages Area */}
+<div className="flex-1 overflow-y-auto p-4 space-y-2 bg-[#efeae2]">
+  {myUserId !== contact.id &&
+    messages.map((msg, index) => (
+      <div
+        key={msg._id || index}
+        className={`flex ${msg.isOwn ? "justify-end" : "justify-start"}`}
+      >
+        <div
+          className={`max-w-[70%] rounded-lg px-3 py-2 mb-1 ${
+            msg.isOwn
+              ? "bg-[#d9fdd3] text-gray-900"
+              : "bg-white text-gray-900"
+          } shadow-sm`}
+        >
+          {!msg.isOwn && (
+            <p className="text-xs font-semibold text-gray-700 mb-1">
+              {msg.senderName}
+            </p>
+          )}
+          <p className="text-sm">{msg.text}</p>
+          <div className="flex items-center justify-end mt-1 space-x-1">
+            <span className="text-xs text-gray-500">
+              {new Date(msg.createdAt).toLocaleTimeString([], {
+                hour: '2-digit',
+                minute: '2-digit',
+              })}
+            </span>
+            {msg.isOwn && renderMessageStatus(msg.status)}
           </div>
-        ))}
-        <div ref={messagesEndRef} />
+        </div>
       </div>
+    ))}
+  <div ref={messagesEndRef} />
+</div>
+
 
       {/* Message Input Area */}
       <div className="bg-[#f0f2f5] p-4 flex items-center space-x-3">
@@ -298,3 +304,4 @@ useEffect(() => {
 };
 
 export default ChatWindow;
+
