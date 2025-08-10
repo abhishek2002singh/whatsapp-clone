@@ -1,3 +1,3 @@
 
- export const BASE_URL = "http://localhost:https://https-github-com-abhishek2002singh.onrender.com"
+ export const BASE_URL = "https://whatsapp-backend-59oz.onrender.com"
 
