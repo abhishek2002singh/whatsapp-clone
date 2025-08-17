@@ -9,6 +9,7 @@ import { useDispatch } from "react-redux";
 import { useEffect } from "react";
 import { addUser, clearUser } from "./utils/userSlice";
 import { isTokenValid } from "./utils/auth";
+import GroupMaking from "./groupMAking/GroupMaking";
 
 
 
@@ -33,6 +34,7 @@ function App() {
   return (
     <Routes>
       <Route path="/" element={<PrivateRoute><Body /></PrivateRoute>} >
+      <Route path="/GroupMaking" element={<GroupMaking />} />
 
       </Route>
      

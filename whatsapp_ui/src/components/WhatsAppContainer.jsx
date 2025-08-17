@@ -4,18 +4,25 @@ import MessageArea from './MessageArea';
 import ChatWindow from './ChatWindow';
 import axios from 'axios';
 import { BASE_URL } from '../utils/Constant';
+import { addAllUser } from '../utils/allUser';
+import { useDispatch } from 'react-redux';
+import { Outlet } from 'react-router-dom';
 
 const WhatsAppContainer = () => {
   const [selectedContact, setSelectedContact] = useState(null);
   const [contacts, setContacts] = useState([]);
+  const dispatch = useDispatch()
 
   const fetchUsers = async () => {
     try {
       const { data } = await axios.get(`${BASE_URL}/users`, {
         withCredentials: true
       });
-      
+      dispatch(addAllUser(data.users))
+       
       if (data.success && data.users) {
+       
+       
         // Transform API users into contacts format
         const transformedContacts = data.users.map(user => ({
           id: user._id,
@@ -59,6 +66,7 @@ const WhatsAppContainer = () => {
       ) : (
         <MessageArea />
       )}
+      <Outlet />
     </div>
   );
 };

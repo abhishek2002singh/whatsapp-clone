@@ -13,7 +13,7 @@ app.use(cookieParser());
 app.use(express.json());
 
 app.use(cors({
-  origin: "https://whatsapp-clone-sj08.onrender.com",
+  origin: "http://localhost:5173",
   credentials: true,
 }));
 

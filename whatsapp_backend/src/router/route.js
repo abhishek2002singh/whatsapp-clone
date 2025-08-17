@@ -20,8 +20,11 @@ routerPath.get("/allOnlineUser", allOnlineUser);
 
 
 //chating route
-const {prevChat} = require('../controller/chatController')
+const {prevChat ,latestMessagesForAllChats, allUnReadMessage} = require('../controller/chatController')
 
 routerPath.get("/chat" ,userAuth, prevChat)
+routerPath.get("/lastMessage" , latestMessagesForAllChats)
+routerPath.get("/allUnReadMessage" , allUnReadMessage)
+
 
 module.exports = routerPath;
